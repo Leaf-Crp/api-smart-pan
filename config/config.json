@@ -1,0 +1,26 @@
+{
+  "development": {
+    "username": "maxime",
+    "password": "root",
+    "database": "smart_pan",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "operatorsAliases": false
+  },
+  "test": {
+    "username": "maxime",
+    "password": "root",
+    "database": "smart_pan",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "operatorsAliases": false
+  },
+  "production": {
+    "username": "maxime",
+    "password": "root",
+    "database": "smart_pan",
+    "host": "127.0.0.1",
+    "dialect": "mysql",
+    "operatorsAliases": false
+  }
+}
