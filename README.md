@@ -9,7 +9,7 @@
 dans package.json=> scripts => start avant de lancer la commande et créer la base "smart_pan" à la main
 <br>Si vous êtes sur Linux remplacer "maxime" par votre utilisateur mysql dans ce même fichier </p>
 <p>=> dans config.json, remplacer username et password par vos identifiants mysql</p>
-
+<p>Passer ensuite les ficheirs database et fixtures dans votre db</p>
 
 
 <p>Exemple de CRUD fait avec les posts (voir post.controller.js)  </p>
