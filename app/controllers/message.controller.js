@@ -1,18 +1,28 @@
 import db from "../../models";
-import UserValidator from "../validators/user.validator";
 import Utils from "../utils";
 import GlobalConstants from "../constants/global.constants";
-import UserConstants from "../constants/user.constants";
 
-var bcrypt = require('bcrypt');
 
-class UserController {
+class MessageController {
     static async list(request, response) {
         let status = 200;
         let body = {};
         try {
-            let users = await db.user.findAll();
-            body = {'users': users, 'message': 'List users'};
+            let messages = await db.message.findAll();
+            body = {'messages': messages, 'message': 'List messages'};
+        } catch (error) {
+            status = 500;
+            body = {'message': error.message};
+        }
+        return response.status(status).json(body);
+    }
+
+    static async detailsTopic(request, response) {
+        let status = 200;
+        let body = {};
+        try {
+            let messages = await db.message.findAll();
+            body = {'messages': messages, 'message': 'List messages'};
         } catch (error) {
             status = 500;
             body = {'message': error.message};
@@ -31,13 +41,13 @@ class UserController {
         let body = [];
         try {
             try {
-                let user = await db.user.findOne({where: {email: request.body.email}});
-                let matchPassword = (await bcrypt.compare(request.body.password, user.password));
+                let topic = await db.topic.findOne({where: {email: request.body.email}});
+                let matchPassword = (await bcrypt.compare(request.body.password, topic.password));
                 if (matchPassword) {
-                    body = {'user': user, 'message': UserConstants.LOGIN_SUCCESSFULL};
+                    body = {'topic': topic, 'message': MessageConstants.LOGIN_SUCCESSFULL};
                 }
             } catch (error) {
-                body = {'message': UserConstants.FAILED_CONNECTION};
+                body = {'message': MessageConstants.FAILED_CONNECTION};
             }
 
         } catch (error) {
@@ -54,22 +64,17 @@ class UserController {
             //Crypte le mdp avec bcrypt
             const salt = await bcrypt.genSalt(10);
             let hashedPassword = await bcrypt.hash(request.body.password, salt);
-            let userToCreate = {
+            let topicToCreate = {
                 email: request.body.email,
-                password: hashedPassword,
-                lastname: request.body.lastname,
-                firstname: request.body.firstname,
-                is_connected_pan: request.body.is_connected_pan,
-                alarm_ended_recipe: request.body.alarm_ended_recipe,
-                alarm_ended_step: request.body.alarm_ended_step
+                password: hashedPassword
             };
-            let validation = await UserValidator.validateUserCreation(userToCreate, true);
+            let validation = await MessageValidator.validateMessageCreation(topicToCreate, true);
             if (validation.isSuccessfull()) {
-                let user = await db.user.create(userToCreate);
-                body = {'user': user, 'message': 'created'};
+                let topic = await db.topic.create(topicToCreate);
+                body = {'topic': topic, 'message': 'created'};
             } else {
                 body = {
-                    'user': GlobalConstants.FAILED_CREATION,
+                    'topic': GlobalConstants.FAILED_CREATION,
                     "errors_messages": validation.getValidationsErrorsMessages()
                 };
             }
@@ -85,8 +90,8 @@ class UserController {
         let body = [];
         try {
             let id = request.params.id;
-            let user = await db.user.findByPk(id);
-            body = {'user': user, 'message': 'Details'};
+            let topic = await db.topic.findByPk(id);
+            body = {'topic': topic, 'message': 'Details'};
         } catch (error) {
             status = 500;
             body = {'message': error.message};
@@ -99,14 +104,14 @@ class UserController {
         let status = 200;
         let body = [];
         try {
-            await db.user.destroy(
+            await db.topic.destroy(
                 {
                     where: {
                         id: request.params.id
                     }
                 }
             );
-            body = {'message': 'user_deleted'};
+            body = {'message': 'topic_deleted'};
         } catch (error) {
             status = 500;
             body = {'message': error.message};
@@ -119,32 +124,28 @@ class UserController {
         let status = 200;
         let body = [];
         try {
+
             const salt = await bcrypt.genSalt(10);
             let hashedPassword = await bcrypt.hash(request.body.password, salt);
 
-            let userToUpdate = {
+            let topicToUpdate = {
                 email: request.body.email,
-                password: hashedPassword,
-                lastname: request.body.lastname,
-                firstname: request.body.firstname,
-                is_connected_pan: request.body.is_connected_pan,
-                alarm_ended_recipe: request.body.alarm_ended_recipe,
-                alarm_ended_step: request.body.alarm_ended_step
+                password: hashedPassword
             };
 
-            let validation = await UserValidator.validateUserCreation(userToUpdate, false);
+            let validation = await MessageValidator.validateMessageCreation(topicToUpdate, false);
             if (validation.isSuccessfull()) {
-                let user = await db.user.update(userToUpdate,
+                let topic = await db.topic.update(topicToUpdate,
                     {
                         where: {
                             id: request.params.id
                         }
                     }
                 );
-                body = {'user': user, 'message': 'updated_user'};
+                body = {'topic': topic, 'message': 'updated_topic'};
             } else {
                 body = {
-                    'user': GlobalConstants.FAILED_UPDATE,
+                    'topic': GlobalConstants.FAILED_UPDATE,
                     "errors_messages": validation.getValidationsErrorsMessages()
                 };
             }
@@ -156,4 +157,4 @@ class UserController {
     }
 }
 
-export default UserController;
+export default MessageController;
