@@ -41,7 +41,7 @@ CREATE TABLE recipe(
         image          Varchar (255) NOT NULL ,
         is_private     Bool NOT NULL ,
         id_recipe_type Int NOT NULL ,
-        id_user        Int NOT NULL
+        id_user        Int NULL
 	,CONSTRAINT recipe_PK PRIMARY KEY (id)
 
 	,CONSTRAINT recipe_recipe_type_FK FOREIGN KEY (id_recipe_type) REFERENCES recipe_type(id)
@@ -111,7 +111,8 @@ CREATE TABLE ingredient(
 
 CREATE TABLE prerequisite_type(
         id    Int  Auto_increment  NOT NULL ,
-        label Varchar (255) NOT NULL
+        label Varchar (255) NOT NULL,
+                code Varchar (255) NOT NULL
 	,CONSTRAINT prerequisite_type_PK PRIMARY KEY (id)
 )ENGINE=InnoDB;
 
@@ -121,12 +122,12 @@ CREATE TABLE prerequisite_type(
 #------------------------------------------------------------
 
 CREATE TABLE step_ingredient(
-        id            Int NOT NULL ,
+        id_step            Int NOT NULL ,
         id_ingredient Int NOT NULL ,
         quantity      Varchar (255) NOT NULL
-	,CONSTRAINT step_ingredient_PK PRIMARY KEY (id,id_ingredient)
+	,CONSTRAINT step_ingredient_PK PRIMARY KEY (id_step,id_ingredient)
 
-	,CONSTRAINT step_ingredient_step_FK FOREIGN KEY (id) REFERENCES step(id)
+	,CONSTRAINT step_ingredient_step_FK FOREIGN KEY (id_step) REFERENCES step(id)
 	,CONSTRAINT step_ingredient_ingredient0_FK FOREIGN KEY (id_ingredient) REFERENCES ingredient(id)
 )ENGINE=InnoDB;
 
@@ -136,12 +137,12 @@ CREATE TABLE step_ingredient(
 #------------------------------------------------------------
 
 CREATE TABLE prerequisite_type_step(
-        id      Int NOT NULL ,
+        id_prerequisite_type Int NOT NULL ,
         id_step Int NOT NULL ,
         detail  Varchar (255) NOT NULL
-	,CONSTRAINT prerequisite_type_step_PK PRIMARY KEY (id,id_step)
+	,CONSTRAINT prerequisite_type_step_PK PRIMARY KEY (id_prerequisite_type,id_step)
 
-	,CONSTRAINT prerequisite_type_step_prerequisite_type_FK FOREIGN KEY (id) REFERENCES prerequisite_type(id)
+	,CONSTRAINT prerequisite_type_step_prerequisite_type_FK FOREIGN KEY (id_prerequisite_type) REFERENCES prerequisite_type(id)
 	,CONSTRAINT prerequisite_type_step_step0_FK FOREIGN KEY (id_step) REFERENCES step(id)
 )ENGINE=InnoDB;
 
@@ -151,12 +152,12 @@ CREATE TABLE prerequisite_type_step(
 #------------------------------------------------------------
 
 CREATE TABLE user_cooked_recipe(
-        id        Int NOT NULL ,
+        id_user        Int NOT NULL ,
         id_recipe Int NOT NULL ,
         id_step   Int NOT NULL
-	,CONSTRAINT user_cooked_recipe_PK PRIMARY KEY (id,id_recipe,id_step)
+	,CONSTRAINT user_cooked_recipe_PK PRIMARY KEY (id_user,id_recipe,id_step)
 
-	,CONSTRAINT user_cooked_recipe_user_FK FOREIGN KEY (id) REFERENCES user(id)
+	,CONSTRAINT user_cooked_recipe_user_FK FOREIGN KEY (id_user) REFERENCES user(id)
 	,CONSTRAINT user_cooked_recipe_recipe0_FK FOREIGN KEY (id_recipe) REFERENCES recipe(id)
 	,CONSTRAINT user_cooked_recipe_step1_FK FOREIGN KEY (id_step) REFERENCES step(id)
 )ENGINE=InnoDB;

@@ -1,26 +1,17 @@
 import db from "../../models";
-import Utils from "../utils";
 import GlobalConstants from "../constants/global.constants";
 
 
-class TopicController {
+class RecipeController {
     static async list(request, response) {
         let status = 200;
         let body = {};
         try {
-            let topics = await db.topic.findAll({
-                include: [{
-                    model: db.message,
-                    required: true
-                }, {
-                    model: db.user,
-                    required: true
-                }]
-            });
-            body = {'topics': topics, 'message': 'List topics'};
+            let recipes = await db.recipe.findAll();
+            body = {'recipes': recipes, 'recipe': 'List recipes'};
         } catch (error) {
             status = 500;
-            body = {'message': error.message};
+            body = {'recipe': error.recipe};
         }
         return response.status(status).json(body);
     }
@@ -29,45 +20,41 @@ class TopicController {
         let status = 200;
         let body = [];
         try {
-            let topicToCreate = {
-                title: request.body.title,
-                content: request.body.content,
+            let recipeToCreate = {
+                label: request.body.label,
+                image: request.body.image,
+                is_private: request.body.is_private,
+                id_recipe_type: request.body.id_recipe_type,
                 id_user: request.body.id_user
             };
-                let topic = await db.topic.create(topicToCreate);
-                body = {'topic': topic, 'message': 'created'};
-            }
-         catch (error) {
+            let recipe = await db.recipe.create(recipeToCreate);
+            body = {'recipeCreated': recipe, 'recipe': 'created'};
+
+        } catch (error) {
             status = 500;
-            body = {'message': error.message};
+            body = {'recipe': error.recipe};
         }
         return response.status(status).json(body);
     }
 
-    /**
-     * Le topic et ses messages
-     * @param request
-     * @param response
-     * @returns {Promise<*|Json>}
-     */
     static async details(request, response) {
         let status = 200;
         let body = [];
         try {
             let id = request.params.id;
-            let topic = await db.topic.findByPk(id, {
+            let recipe = await db.recipe.findByPk(id,{
                 include: [{
-                    model: db.message,
+                    model: db.recipe_type,
                     required: true
                 }, {
                     model: db.user,
                     required: true
                 }]
             });
-            body = {'topic': topic, 'message': 'Details'};
+            body = {'recipe': recipe, 'message': 'Details'};
         } catch (error) {
             status = 500;
-            body = {'message': error.message};
+            body = {'recipe': error.recipe};
         }
         return response.status(status).json(body);
     }
@@ -77,17 +64,17 @@ class TopicController {
         let status = 200;
         let body = [];
         try {
-            await db.topic.destroy(
+            await db.recipe.destroy(
                 {
                     where: {
                         id: request.params.id
                     }
                 }
             );
-            body = {'message': 'topic_deleted'};
+            body = {'recipe': 'recipe_deleted'};
         } catch (error) {
             status = 500;
-            body = {'message': error.message};
+            body = {'recipe': error.recipe};
         }
         return response.status(status).json(body);
     }
@@ -97,37 +84,30 @@ class TopicController {
         let status = 200;
         let body = [];
         try {
-
-            const salt = await bcrypt.genSalt(10);
-            let hashedPassword = await bcrypt.hash(request.body.password, salt);
-
-            let topicToUpdate = {
-                email: request.body.email,
-                password: hashedPassword
+            let recipeToUpdate = {
             };
 
-            let validation = await TopicValidator.validateTopicCreation(topicToUpdate, false);
             if (validation.isSuccessfull()) {
-                let topic = await db.topic.update(topicToUpdate,
+                let recipe = await db.recipe.update(recipeToUpdate,
                     {
                         where: {
                             id: request.params.id
                         }
                     }
                 );
-                body = {'topic': topic, 'message': 'updated_topic'};
+                body = {'recipe': recipe, 'message': 'updated_recipe'};
             } else {
                 body = {
-                    'topic': GlobalConstants.FAILED_UPDATE,
-                    "errors_messages": validation.getValidationsErrorsMessages()
+                    'recipe': GlobalConstants.FAILED_UPDATE,
+                    "errors_recipes": validation.getValidationsErrorsRecipes()
                 };
             }
         } catch (error) {
             status = 500;
-            body = {'message': error.message};
+            body = {'recipe': error.recipe};
         }
         return response.status(status).json(body);
     }
 }
 
-export default TopicController;
+export default RecipeController;

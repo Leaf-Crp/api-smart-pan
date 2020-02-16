@@ -15,6 +15,5 @@ dans package.json=> scripts => start avant de lancer la commande et créer la ba
 <p>Exemple de CRUD fait avec les posts (voir post.controller.js)  </p>
 
 <h3>à faire :</h3>
-<p>Voir vo==comment generer les models des tables existantes</p>
-<p>implémenter la base SQL depuis le script du MCD et regénerer les models</p> 
-<p>Faire les CRUDS pour chaque table selon besoin des fronts</p>
+<p>Voir comment gérer les Many to many (o,n 0,n) avec sequelize exemple: afficher tous les ingrédients d'une étape et leur quantité quand on fait un /steps, pareil pour les prérequis d'une étape et leur détail </p>
+<p>Gérer la CIM user_cokked_recipe aussi, </p>

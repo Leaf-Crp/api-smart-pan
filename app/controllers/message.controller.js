@@ -17,19 +17,6 @@ class MessageController {
         return response.status(status).json(body);
     }
 
-    static async detailsTopic(request, response) {
-        let status = 200;
-        let body = {};
-        try {
-            let messages = await db.message.findAll();
-            body = {'messages': messages, 'message': 'List messages'};
-        } catch (error) {
-            status = 500;
-            body = {'message': error.message};
-        }
-        return response.status(status).json(body);
-    }
-
     /**
      *Vérifie si l'utilisateur existe et que le password match
      * @param request
@@ -61,23 +48,13 @@ class MessageController {
         let status = 200;
         let body = [];
         try {
-            //Crypte le mdp avec bcrypt
-            const salt = await bcrypt.genSalt(10);
-            let hashedPassword = await bcrypt.hash(request.body.password, salt);
-            let topicToCreate = {
-                email: request.body.email,
-                password: hashedPassword
+            let messageToCreate = {
+                content: request.body.content,
+                id_topic: request.body.id_topic
             };
-            let validation = await MessageValidator.validateMessageCreation(topicToCreate, true);
-            if (validation.isSuccessfull()) {
-                let topic = await db.topic.create(topicToCreate);
-                body = {'topic': topic, 'message': 'created'};
-            } else {
-                body = {
-                    'topic': GlobalConstants.FAILED_CREATION,
-                    "errors_messages": validation.getValidationsErrorsMessages()
-                };
-            }
+            let message = await db.message.create(messageToCreate);
+            body = {'messageCreated': message, 'message': 'created'};
+
         } catch (error) {
             status = 500;
             body = {'message': error.message};

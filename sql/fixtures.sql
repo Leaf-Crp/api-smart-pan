@@ -1,1 +1,2 @@
 INSERT INTO `user` (`id`, `email`, `password`, `firstname`, `lastname`, `is_connected_pan`, `alarm_ended_recipe`, `alarm_ended_step`) VALUES ('1', 'vincenzo.nibali@astana.it', 'nibali', 'Vincenzo', 'Nibali', '1', '', '');
+INSERT INTO `ingredient` (`id`, `label`, `image`) VALUES ('1', 'carotte', '');

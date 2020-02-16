@@ -6,7 +6,8 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
                 autoIncrement: true
             },
-            content: DataTypes.TEXT
+            content: DataTypes.TEXT,
+            id_topic: DataTypes.INTEGER
         },
         {
             freezeTableName: true,

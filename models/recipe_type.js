@@ -1,13 +1,12 @@
 module.exports = (sequelize, DataTypes) => {
     //https://sequelize.readthedocs.io/en/2.0/api/datatypes/
-    const Topic = sequelize.define('topic', {
+    const RecipeType = sequelize.define('recipe_type', {
             id: {
                 type: DataTypes.INTEGER,
                 primaryKey: true,
                 autoIncrement: true
             },
-            title: DataTypes.STRING,
-            content: DataTypes.TEXT
+            label: DataTypes.STRING
         },
         {
             freezeTableName: true,
@@ -15,11 +14,9 @@ module.exports = (sequelize, DataTypes) => {
         }
     );
 
-    Topic.associate = (models) => {
-        Topic.hasMany(models.message, {foreignKey: 'id_topic' });
-        Topic.belongsTo(models.user, {foreignKey: 'id_user'});
 
+    RecipeType.associate = (models) => {
+        RecipeType.hasMany(models.recipe, {foreignKey: 'id_recipe_type' });
     };
-
-    return Topic;
+    return RecipeType;
 };

@@ -1,13 +1,12 @@
 module.exports = (sequelize, DataTypes) => {
     //https://sequelize.readthedocs.io/en/2.0/api/datatypes/
-    const Topic = sequelize.define('topic', {
+    const PrerequisiteType = sequelize.define('prerequisite_type', {
             id: {
                 type: DataTypes.INTEGER,
                 primaryKey: true,
                 autoIncrement: true
             },
-            title: DataTypes.STRING,
-            content: DataTypes.TEXT
+            label: DataTypes.STRING
         },
         {
             freezeTableName: true,
@@ -15,11 +14,8 @@ module.exports = (sequelize, DataTypes) => {
         }
     );
 
-    Topic.associate = (models) => {
-        Topic.hasMany(models.message, {foreignKey: 'id_topic' });
-        Topic.belongsTo(models.user, {foreignKey: 'id_user'});
-
-    };
-
-    return Topic;
+  /*  PrerequisiteType.associate = (models) => {
+        PrerequisiteType.hasMany(models.recipe, {foreignKey: 'id_prerequisite_type' });
+    };*/
+    return PrerequisiteType;
 };
