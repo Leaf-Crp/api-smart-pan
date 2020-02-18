@@ -15,17 +15,12 @@ module.exports = (sequelize, DataTypes) => {
             timestamps: false
         }
     );
-
     Step.associate = (models) => {
         Step.belongsToMany(models.ingredient, {
-            through: models.step_ingredient,
-            foreignKey: 'id_step',
-            as: 'ingredients'
+            through: 'step_ingredient',
+            as: 'ingredients',
+            foreignKey: 'id_step'
         });
     };
-
-    /*   Step.associate = (models) => {
-           Step.belongsTo(models.topic, {foreignKey: 'id_topic'});
-       };*/
     return Step;
 };

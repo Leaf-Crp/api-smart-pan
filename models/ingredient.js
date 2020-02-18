@@ -20,7 +20,6 @@ module.exports = (sequelize, DataTypes) => {
             through: 'step_ingredient',
             as: 'steps',
             foreignKey: 'id_ingredient',
-            otherKey: 'id_step'
         });
     };
     return Ingredient;

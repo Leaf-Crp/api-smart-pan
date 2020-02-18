@@ -32,10 +32,12 @@ router.get('/messages', MessageController.list);
 router.post('/messages', MessageController.create);
 
 router.get('/ingredients', IngredientController.list);
+router.post('/ingredients', IngredientController.create);
 
 //revoir la liaison many to many pas OK
 router.get('/steps', StepController.list);
 router.post('/steps', StepController.create);
+router.get('/steps/:id', StepController.details);
 
 router.get('/recipes', RecipeController.list);
 router.post('/recipes', RecipeController.create);

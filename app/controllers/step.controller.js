@@ -1,13 +1,16 @@
 import db from "../../models";
 import GlobalConstants from "../constants/global.constants";
+import Ingredient from '../../models/ingredient';
 
 
 class StepController {
     static async list(request, response) {
         let status = 200;
         let body = {};
+        let steps = await db.step.findAll({
+            include: { association: 'ingredients'}
+        });
         try {
-            let steps = await db.step.findAll();
             body = {'steps': steps, 'step': 'List steps'};
         } catch (error) {
             status = 500;
@@ -20,12 +23,7 @@ class StepController {
         let status = 200;
         let body = [];
         try {
-            let stepToCreate = {
-                duration: request.body.duration,
-                label: request.body.label,
-                id_recipe: request.body.id_recipe
-            };
-            let step = await db.step.create(stepToCreate);
+            let step = await db.step.create(request.body);
             body = {'stepCreated': step, 'step': 'created'};
 
         } catch (error) {

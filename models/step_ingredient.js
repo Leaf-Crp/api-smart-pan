@@ -24,9 +24,5 @@ module.exports = (sequelize, DataTypes) => {
             timestamps: false
         }
     );
-
-    /*   Step.associate = (models) => {
-           Step.belongsTo(models.topic, {foreignKey: 'id_topic'});
-       };*/
     return StepIngredient;
 };
