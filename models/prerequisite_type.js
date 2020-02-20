@@ -14,8 +14,12 @@ module.exports = (sequelize, DataTypes) => {
         }
     );
 
-  /*  PrerequisiteType.associate = (models) => {
-        PrerequisiteType.hasMany(models.recipe, {foreignKey: 'id_prerequisite_type' });
-    };*/
+   PrerequisiteType.associate = (models) => {
+      PrerequisiteType.belongsToMany(models.step, {
+         through: 'prerequisite_type_step',
+         as: 'steps',
+         foreignKey: 'id_prerequisite_type'
+      });
+   };
     return PrerequisiteType;
 };

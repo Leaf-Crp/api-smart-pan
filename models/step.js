@@ -21,6 +21,12 @@ module.exports = (sequelize, DataTypes) => {
             as: 'ingredients',
             foreignKey: 'id_step'
         });
+       Step.belongsToMany(models.prerequisite_type, {
+          through: 'prerequisite_type_step',
+          as: 'prerequisite_type',
+          foreignKey: 'id_step'
+       });
     };
+
     return Step;
 };

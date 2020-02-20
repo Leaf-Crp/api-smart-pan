@@ -1,6 +1,6 @@
 module.exports = (sequelize, DataTypes) => {
     //https://sequelize.readthedocs.io/en/2.0/api/datatypes/
-    const StepIngredient = sequelize.define('step_ingredient', {
+    const PrerequisiteTypeStep = sequelize.define('prerequisite_type_step', {
             id_step: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
@@ -13,7 +13,7 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
-                    model: 'ingredient',
+                    model: 'prerequisite_type',
                     key: 'id'
                 }
             },
@@ -25,5 +25,5 @@ module.exports = (sequelize, DataTypes) => {
         }
     );
 
-    return StepIngredient;
+    return PrerequisiteTypeStep;
 };

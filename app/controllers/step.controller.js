@@ -1,6 +1,5 @@
 import db from "../../models";
 import GlobalConstants from "../constants/global.constants";
-import Ingredient from '../../models/ingredient';
 
 
 class StepController {
@@ -8,7 +7,15 @@ class StepController {
         let status = 200;
         let body = {};
         let steps = await db.step.findAll({
-            include: { association: 'ingredients'}
+            include: [{
+                model: db.prerequisite_type,
+                as: 'prerequisite_type',
+            },
+            {
+                model: db.ingredient,
+                as: 'ingredients',
+            }
+            ]
         });
         try {
             body = {'steps': steps, 'step': 'List steps'};
