@@ -1,5 +1,6 @@
 import db from "../../models";
 import GlobalConstants from "../constants/global.constants";
+import RecipeAssociations from "../constants/recipe.constants";
 
 
 class RecipeController {
@@ -7,7 +8,7 @@ class RecipeController {
         let status = 200;
         let body = {};
         try {
-            let recipes = await db.recipe.findAll();
+            let recipes = await db.recipe.findAll(RecipeAssociations.RECIPE_ASSOCIATIONS);
             body = {'recipes': recipes, 'recipe': 'List recipes'};
         } catch (error) {
             status = 500;
@@ -42,15 +43,7 @@ class RecipeController {
         let body = [];
         try {
             let id = request.params.id;
-            let recipe = await db.recipe.findByPk(id,{
-                include: [{
-                    model: db.recipe_type,
-                    required: true
-                }, {
-                    model: db.user,
-                    required: true
-                }]
-            });
+            let recipe = await db.recipe.findByPk(id,RecipeAssociations.RECIPE_ASSOCIATIONS);
             body = {'recipe': recipe, 'message': 'Details'};
         } catch (error) {
             status = 500;
@@ -84,8 +77,7 @@ class RecipeController {
         let status = 200;
         let body = [];
         try {
-            let recipeToUpdate = {
-            };
+            let recipeToUpdate = {};
 
             if (validation.isSuccessfull()) {
                 let recipe = await db.recipe.update(recipeToUpdate,

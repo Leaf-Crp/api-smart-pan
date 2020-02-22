@@ -14,15 +14,16 @@ module.exports = (sequelize, DataTypes) => {
         },
         {
             freezeTableName: true,
-            timestamps: false
+            timestamps: false,
+            hierarchy: true
         }
     );
 
 
     Recipe.associate = (models) => {
+        Recipe.hasMany(models.step, {foreignKey: 'id_recipe' });
         Recipe.belongsTo(models.user, {foreignKey: 'id_user'});
         Recipe.belongsTo(models.recipe_type, {foreignKey: 'id_recipe_type'});
-
     };
 
 

@@ -19,5 +19,9 @@ module.exports = (sequelize, DataTypes) => {
             timestamps: false
         }
     );
+    User.associate = (models) => {
+        User.hasMany(models.recipe, {foreignKey: 'id_user' });
+    };
+
     return User;
 };

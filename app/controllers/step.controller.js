@@ -10,10 +10,16 @@ class StepController {
             include: [{
                 model: db.prerequisite_type,
                 as: 'prerequisite_type',
+                through: {
+                    attributes: ['detail']
+                },
             },
             {
                 model: db.ingredient,
                 as: 'ingredients',
+                through: {
+                    attributes: ['quantity']
+                },
             }
             ]
         });
