@@ -85,7 +85,12 @@ class UserController {
         let body = [];
         try {
             let id = request.params.id;
-            let user = await db.user.findByPk(id);
+            let user = await db.user.findByPk(id, {
+                include: [{
+                    association: 'historics',
+                    attributes: {exclude: ['id_recipe_type', 'id_user']}
+                }],
+            });
             body = {'user': user, 'message': 'Details'};
         } catch (error) {
             status = 500;

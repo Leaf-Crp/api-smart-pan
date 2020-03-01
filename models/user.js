@@ -21,6 +21,11 @@ module.exports = (sequelize, DataTypes) => {
     );
     User.associate = (models) => {
         User.hasMany(models.recipe, {foreignKey: 'id_user' });
+        User.belongsToMany(models.recipe, {
+            through: 'user_cooked_recipe',
+            as: 'historics',
+            foreignKey: 'id_user'
+        });
     };
 
     return User;

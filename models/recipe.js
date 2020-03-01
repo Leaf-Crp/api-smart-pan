@@ -24,6 +24,7 @@ module.exports = (sequelize, DataTypes) => {
         Recipe.hasMany(models.step, {foreignKey: 'id_recipe' });
         Recipe.belongsTo(models.user, {foreignKey: 'id_user'});
         Recipe.belongsTo(models.recipe_type, {foreignKey: 'id_recipe_type'});
+        Recipe.belongsToMany(models.user, { through: 'user_cooked_recipe',  foreignKey: 'id_user' });
     };
 
 

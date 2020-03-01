@@ -17,7 +17,11 @@ module.exports = (sequelize, DataTypes) => {
     );
     Step.associate = (models) => {
         Step.belongsTo(models.recipe, {foreignKey: 'id_recipe'});
-
+        Step.belongsToMany(models.ingredient, {
+            through: 'user_cooked_recipe',
+            as: 'historics',
+            foreignKey: 'id_step'
+        });
         Step.belongsToMany(models.ingredient, {
             through: 'step_ingredient',
             as: 'ingredients',
