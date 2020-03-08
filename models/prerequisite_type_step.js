@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
                     key: 'id'
                 }
             },
-            id_prerequisite_type : {
+            id_prerequisite_type: {
                 type: DataTypes.INTEGER,
                 allowNull: false,
                 references: {
@@ -24,6 +24,9 @@ module.exports = (sequelize, DataTypes) => {
             timestamps: false
         }
     );
+    PrerequisiteTypeStep.associate = (models) => {
+        PrerequisiteTypeStep.belongsTo(models.prerequisite_type, {foreignKey: 'id_step'});
+    };
 
     return PrerequisiteTypeStep;
 };

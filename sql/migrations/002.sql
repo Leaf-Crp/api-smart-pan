@@ -1,5 +1,5 @@
-INSERT INTO `user` (`id`, `email`, `password`, `firstname`, `lastname`, `is_connected_pan`, `alarm_ended_recipe`, `alarm_ended_step`) VALUES ('1', 'vincenzo.nibali@astana.it', 'nibali', 'Vincenzo', 'Nibali', '1', '', '');
-INSERT INTO `ingredient` (`id`, `label`, `image`) VALUES ('1', 'carotte', '');
+ALTER TABLE user_cooked_recipe
+ADD date DATE null;
 
 INSERT INTO `prerequisite_type` (`id`, `label`, `code`) VALUES ('1', 'Température minimale à atteindre', 'min_temperature');
 INSERT INTO `prerequisite_type` (`id`, `label`, `code`) VALUES ('2', 'Température maximale à ne pas dépasser', 'max_temperature');

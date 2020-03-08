@@ -13,7 +13,6 @@ class PrerequisiteTypeController {
         }
         return response.status(status).json(body);
     }
-
 }
 
 

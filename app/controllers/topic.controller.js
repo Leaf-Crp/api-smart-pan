@@ -34,10 +34,9 @@ class TopicController {
                 content: request.body.content,
                 id_user: request.body.id_user
             };
-                let topic = await db.topic.create(topicToCreate);
-                body = {'topic': topic, 'message': 'created'};
-            }
-         catch (error) {
+            let topic = await db.topic.create(topicToCreate);
+            body = {'topic': topic, 'message': 'created'};
+        } catch (error) {
             status = 500;
             body = {'message': error.message};
         }
@@ -97,31 +96,18 @@ class TopicController {
         let status = 200;
         let body = [];
         try {
-
-            const salt = await bcrypt.genSalt(10);
-            let hashedPassword = await bcrypt.hash(request.body.password, salt);
-
             let topicToUpdate = {
                 email: request.body.email,
                 password: hashedPassword
             };
-
-            let validation = await TopicValidator.validateTopicCreation(topicToUpdate, false);
-            if (validation.isSuccessfull()) {
-                let topic = await db.topic.update(topicToUpdate,
-                    {
-                        where: {
-                            id: request.params.id
-                        }
+            let topic = await db.topic.update(topicToUpdate,
+                {
+                    where: {
+                        id: request.params.id
                     }
-                );
-                body = {'topic': topic, 'message': 'updated_topic'};
-            } else {
-                body = {
-                    'topic': GlobalConstants.FAILED_UPDATE,
-                    "errors_messages": validation.getValidationsErrorsMessages()
-                };
-            }
+                }
+            );
+            body = {'topic': topic, 'message': 'updated_topic'};
         } catch (error) {
             status = 500;
             body = {'message': error.message};

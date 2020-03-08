@@ -8,6 +8,8 @@ import IngredientController from "../controllers/ingredient.controller";
 import StepController from "../controllers/step.controller";
 import RecipeController from "../controllers/recipe.controller";
 import PrerequisiteTypeController from "../controllers/prerequisite_type.controller";
+import HistoricController from "../controllers/user_cooked_recipe";
+import PrerequisiteTypeStepController from "../controllers/prerequisite_type_step.controller";
 
 const router = Router();
 
@@ -23,6 +25,9 @@ router.post('/check_login', UserController.checkLogin);
 router.delete('/users/:id', UserController.delete);
 router.put('/users/:id', UserController.update);
 router.get('/users/:id', UserController.details);
+
+router.post('/historic', HistoricController.makeHistoric);
+router.delete('/historic/:iduser/:idrecipe', HistoricController.delete);
 
 router.get('/topics', TopicController.list);
 router.get('/topics/:id', TopicController.details);
@@ -46,6 +51,7 @@ router.delete('/recipes/:id', RecipeController.delete);
 
 router.get('/prerequisite_types', PrerequisiteTypeController.list);
 
+router.post('/check_step/:id', PrerequisiteTypeStepController.shouldStepStart);
 
 
 export default router;

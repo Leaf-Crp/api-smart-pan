@@ -6,7 +6,9 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
                 autoIncrement: true
             },
-            label: DataTypes.STRING
+            label: DataTypes.STRING,
+            code: DataTypes.STRING
+
         },
         {
             freezeTableName: true,
@@ -14,12 +16,14 @@ module.exports = (sequelize, DataTypes) => {
         }
     );
 
-   PrerequisiteType.associate = (models) => {
-      PrerequisiteType.belongsToMany(models.step, {
-         through: 'prerequisite_type_step',
-         as: 'steps',
-         foreignKey: 'id_prerequisite_type'
-      });
-   };
+    PrerequisiteType.associate = (models) => {
+        PrerequisiteType.belongsToMany(models.step, {
+            through: 'prerequisite_type_step',
+            as: 'steps',
+            foreignKey: 'id_prerequisite_type'
+        });
+        PrerequisiteType.hasMany(models.prerequisite_type_step, {foreignKey: 'id_step'});
+
+    };
     return PrerequisiteType;
 };
