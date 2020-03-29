@@ -10,6 +10,7 @@ import RecipeController from "../controllers/recipe.controller";
 import PrerequisiteTypeController from "../controllers/prerequisite_type.controller";
 import HistoricController from "../controllers/user_cooked_recipe";
 import PrerequisiteTypeStepController from "../controllers/prerequisite_type_step.controller";
+import RecipeTypeController from "../controllers/recipe_type.controller";
 
 const router = Router();
 
@@ -48,6 +49,8 @@ router.get('/recipes', RecipeController.list);
 router.post('/recipes', RecipeController.create);
 router.get('/recipes/:id', RecipeController.details);
 router.delete('/recipes/:id', RecipeController.delete);
+
+router.get('/recipe_types', RecipeTypeController.list);
 
 router.get('/prerequisite_types', PrerequisiteTypeController.list);
 
