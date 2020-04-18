@@ -21,17 +21,23 @@ class RecipeController {
         let status = 200;
         let body = [];
         try {
+            console.log(request.body.steps.map(e => {
+                console.log(e);
+            }));
+
             let recipeToCreate = {
                 label: request.body.label,
                 image: request.body.image,
                 is_private: request.body.is_private,
                 id_recipe_type: request.body.id_recipe_type,
-                id_user: request.body.id_user
+                id_user: request.body.id_user,
+                steps: request.body.steps
             };
-            let recipe = await db.recipe.create(recipeToCreate);
+            let recipe = await db.recipe.create(recipeToCreate, {include: "steps"});
             body = {'recipeCreated': recipe, 'recipe': 'created'};
 
         } catch (error) {
+            console.log(error);
             status = 500;
             body = {'recipe': error.recipe};
         }
@@ -43,7 +49,7 @@ class RecipeController {
         let body = [];
         try {
             let id = request.params.id;
-            let recipe = await db.recipe.findByPk(id,RecipeAssociations.RECIPE_ASSOCIATIONS);
+            let recipe = await db.recipe.findByPk(id, RecipeAssociations.RECIPE_ASSOCIATIONS);
             body = {'recipe': recipe, 'message': 'Details'};
         } catch (error) {
             status = 500;
