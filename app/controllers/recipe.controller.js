@@ -9,7 +9,7 @@ class RecipeController {
         let body = {};
         try {
             let recipes = await db.recipe.findAll(RecipeAssociations.RECIPE_ASSOCIATIONS);
-            body = {'recipes': recipes, 'recipe': 'List recipes'};
+            body =  recipes;
         } catch (error) {
             status = 500;
             body = {'recipe': error.recipe};
