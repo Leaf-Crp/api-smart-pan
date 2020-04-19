@@ -9,7 +9,7 @@ class RecipeController {
         let body = {};
         try {
             let recipes = await db.recipe.findAll(RecipeAssociations.RECIPE_ASSOCIATIONS);
-            body =  recipes;
+            body = recipes;
         } catch (error) {
             status = 500;
             body = {'recipe': error.recipe};
@@ -21,10 +21,6 @@ class RecipeController {
         let status = 200;
         let body = [];
         try {
-            console.log(request.body.steps.map(e => {
-                console.log(e);
-            }));
-
             let recipeToCreate = {
                 label: request.body.label,
                 image: request.body.image,
@@ -34,8 +30,23 @@ class RecipeController {
                 steps: request.body.steps
             };
             let recipe = await db.recipe.create(recipeToCreate, {include: "steps"});
-            body = {'recipeCreated': recipe, 'recipe': 'created'};
+            (recipe.steps.map(async s => {
+                let stepIngredient = {
+                    id_step: s.id,
+                    id_ingredient: 1,
+                    quantity: 1
+                };
 
+                await db.step_ingredient.create(stepIngredient);
+
+                let prerequisiteTypeStep = {
+                    id_step: s.id,
+                    id_prerequisite_type: 1,
+                    detail: "1"
+                };
+                await db.prerequisite_type_step.create(prerequisiteTypeStep);
+            }));
+            body = {'recipeCreated': recipe, 'recipe': 'created'};
         } catch (error) {
             console.log(error);
             status = 500;
