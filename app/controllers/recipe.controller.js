@@ -9,7 +9,7 @@ class RecipeController {
         let body = {};
         try {
             let recipes = await db.recipe.findAll(RecipeAssociations.RECIPE_ASSOCIATIONS);
-            body =  recipes;
+            body = recipes;
         } catch (error) {
             status = 500;
             body = {'recipe': error.recipe};
@@ -26,12 +26,29 @@ class RecipeController {
                 image: request.body.image,
                 is_private: request.body.is_private,
                 id_recipe_type: request.body.id_recipe_type,
-                id_user: request.body.id_user
+                id_user: request.body.id_user,
+                steps: request.body.steps
             };
-            let recipe = await db.recipe.create(recipeToCreate);
-            body = {'recipeCreated': recipe, 'recipe': 'created'};
+            let recipe = await db.recipe.create(recipeToCreate, {include: "steps"});
+            (recipe.steps.map(async s => {
+                let stepIngredient = {
+                    id_step: s.id,
+                    id_ingredient: 1,
+                    quantity: 1
+                };
 
+                await db.step_ingredient.create(stepIngredient);
+
+                let prerequisiteTypeStep = {
+                    id_step: s.id,
+                    id_prerequisite_type: 1,
+                    detail: "1"
+                };
+                await db.prerequisite_type_step.create(prerequisiteTypeStep);
+            }));
+            body = {'recipeCreated': recipe, 'recipe': 'created'};
         } catch (error) {
+            console.log(error);
             status = 500;
             body = {'recipe': error.recipe};
         }
@@ -43,7 +60,7 @@ class RecipeController {
         let body = [];
         try {
             let id = request.params.id;
-            let recipe = await db.recipe.findByPk(id,RecipeAssociations.RECIPE_ASSOCIATIONS);
+            let recipe = await db.recipe.findByPk(id, RecipeAssociations.RECIPE_ASSOCIATIONS);
             body = {'recipe': recipe, 'message': 'Details'};
         } catch (error) {
             status = 500;
