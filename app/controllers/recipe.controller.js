@@ -9,6 +9,17 @@ class RecipeController {
         let body = {};
         try {
             let recipes = await db.recipe.findAll(RecipeAssociations.RECIPE_ASSOCIATIONS);
+          //on accède aux propriétés mtm directement dans l'objet
+            recipes.map(r => {
+                r.steps.map(s => {
+                    s.ingredients.map(i => {
+                        i.setDataValue('quantity', i.step_ingredient.quantity);
+                    });
+                    s.prerequisite_type.map(p => {
+                        p.setDataValue('detail', p.prerequisite_type_step.detail);
+                    })
+                })
+            });
             body = recipes;
         } catch (error) {
             status = 500;
