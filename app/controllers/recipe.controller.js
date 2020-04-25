@@ -1,6 +1,8 @@
 import db from "../../models";
 import GlobalConstants from "../constants/global.constants";
 import RecipeAssociations from "../constants/recipe.constants";
+const multer = require('multer');
+const upload = multer({dest:'public/uploads/recipes'}).single("recipe_image");
 
 
 class RecipeController {
@@ -9,7 +11,7 @@ class RecipeController {
         let body = {};
         try {
             let recipes = await db.recipe.findAll(RecipeAssociations.RECIPE_ASSOCIATIONS);
-          //on accède aux propriétés mtm directement dans l'objet
+            //on accède aux propriétés mtm directement dans l'objet
             recipes.map(r => {
                 r.steps.map(s => {
                     s.ingredients.map(i => {
@@ -32,37 +34,48 @@ class RecipeController {
         let status = 200;
         let body = [];
         try {
-            let recipeToCreate = {
-                label: request.body.label,
-                image: request.body.image,
-                is_private: request.body.is_private,
-                id_recipe_type: request.body.id_recipe_type,
-                id_user: request.body.id_user,
-                steps: request.body.steps
-            };
-            let recipe = await db.recipe.create(recipeToCreate, {include: "steps"});
-            (recipe.steps.map(async s => {
-                let stepIngredient = {
-                    id_step: s.id,
-                    id_ingredient: 1,
-                    quantity: 1
-                };
 
-                await db.step_ingredient.create(stepIngredient);
+        let recipeToCreate = {
+            label: request.body.label,
+            image: request.body.image,
+            is_private: request.body.is_private,
+            id_recipe_type: request.body.id_recipe_type,
+            id_user: request.body.id_user
+        };
+    /*    let fileName = "";
+          await upload(request,response, (err)=>{
+              let fileName = (request.file.destination + '/'+ request.file.filename);
+              console.log(fileName);
+          });*/
 
-                let prerequisiteTypeStep = {
-                    id_step: s.id,
-                    id_prerequisite_type: 1,
-                    detail: "1"
-                };
-                await db.prerequisite_type_step.create(prerequisiteTypeStep);
-            }));
-            body = {'recipeCreated': recipe, 'recipe': 'created'};
-        } catch (error) {
-            console.log(error);
-            status = 500;
-            body = {'recipe': error.recipe};
-        }
+               let recipe = await db.recipe.create(recipeToCreate);
+               request.body.steps.map(async step => {
+                   step.id_recipe = recipe.id;
+                   let stepCreated = await db.step.create(step);
+                   step.ingredients.map(async ingredient => {
+                       let step_ingredient = {
+                           id_step: stepCreated.id,
+                           id_ingredient: ingredient.id,
+                           quantity: ingredient.quantity
+                       };
+                       await db.step_ingredient.create(step_ingredient);
+                   });
+                   step.prerequisiteTypes.map(async prerequisite => {
+                       let prerequisite_type_step = {
+                           id_step: stepCreated.id,
+                           id_prerequisite_type: prerequisite.id,
+                           detail: prerequisite.detail
+                       };
+                       await db.prerequisite_type_step.create(prerequisite_type_step);
+                   })
+               });
+
+               body = {'recipeCreated': 12, 'recipe': 'created'};
+           } catch (error) {
+               console.log(error);
+               status = 500;
+               body = {'recipe': error.recipe};
+           }
         return response.status(status).json(body);
     }
 
