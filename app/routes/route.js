@@ -46,6 +46,7 @@ router.post('/steps', StepController.create);
 router.get('/steps/:id', StepController.details);
 
 router.get('/recipes', RecipeController.list);
+router.get('/recipes/users', RecipeController.own_recipes);
 router.post('/recipes', RecipeController.create);
 router.get('/recipes/:id', RecipeController.details);
 router.delete('/recipes/:id', RecipeController.delete);
@@ -55,7 +56,6 @@ router.get('/recipe_types', RecipeTypeController.list);
 router.get('/prerequisite_types', PrerequisiteTypeController.list);
 
 router.post('/check_step/:id', PrerequisiteTypeStepController.shouldStepStart);
-
 
 export default router;
 

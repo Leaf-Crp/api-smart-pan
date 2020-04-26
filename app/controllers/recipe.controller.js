@@ -30,6 +30,31 @@ class RecipeController {
         return response.status(status).json(body);
     }
 
+    //à refactoriser ...
+    static async own_recipes(request, response) {
+        let status = 200;
+        let body = {};
+        try {
+            let recipes = await db.recipe.findAll(RecipeAssociations.OWN_RECIPE_ASSOCIATIONS);
+            //on accède aux propriétés mtm directement dans l'objet
+            recipes.map(r => {
+                r.steps.map(s => {
+                    s.ingredients.map(i => {
+                        i.setDataValue('quantity', i.step_ingredient.quantity);
+                    });
+                    s.prerequisite_type.map(p => {
+                        p.setDataValue('detail', p.prerequisite_type_step.detail);
+                    })
+                })
+            });
+            body = {'recipes': recipes, 'message': 'list of own recipes'};
+        } catch (error) {
+            status = 500;
+            body = {'recipe': error.recipe};
+        }
+        return response.status(status).json(body);
+    }
+
     static async create(request, response) {
         let status = 200;
         let body = [];
