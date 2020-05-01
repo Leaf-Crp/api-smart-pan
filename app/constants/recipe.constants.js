@@ -61,7 +61,7 @@ let constants = {
                     }
                 ]
             }]
-    }
+    }, RECIPE_IMAGE_PATH: 'public/uploads/'
 };
 
 export default constants;

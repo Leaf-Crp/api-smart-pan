@@ -2,7 +2,9 @@ import db from "../../models";
 import GlobalConstants from "../constants/global.constants";
 import RecipeAssociations from "../constants/recipe.constants";
 const multer = require('multer');
-const upload = multer({dest:'public/uploads/recipes'}).single("recipe_image");
+const upload = multer({dest:'public/uploads/recipes'}).single("file");
+const fs = require('fs');
+import FileService from "../services/file.service";
 
 
 class RecipeController {
@@ -59,19 +61,14 @@ class RecipeController {
         let status = 200;
         let body = [];
         try {
-
-        let recipeToCreate = {
-            label: request.body.label,
-            image: request.body.image,
-            is_private: request.body.is_private,
-            id_recipe_type: request.body.id_recipe_type,
-            id_user: request.body.id_user
-        };
-    /*    let fileName = "";
-          await upload(request,response, (err)=>{
-              let fileName = (request.file.destination + '/'+ request.file.filename);
-              console.log(fileName);
-          });*/
+            let recipeToCreate = {
+                label: request.body.label,
+                image: request.body.image,
+                is_private: request.body.is_private,
+                id_recipe_type: request.body.id_recipe_type,
+                id_user: request.body.id_user
+            };
+            request.file && (recipeToCreate.image = RecipeAssociations.RECIPE_IMAGE_PATH + request.file.filename);
 
                let recipe = await db.recipe.create(recipeToCreate);
                request.body.steps.map(async step => {
@@ -94,8 +91,7 @@ class RecipeController {
                        await db.prerequisite_type_step.create(prerequisite_type_step);
                    })
                });
-
-               body = {'recipeCreated': 12, 'recipe': 'created'};
+               body = {'recipeCreated': recipe, 'recipe': 'created'};
            } catch (error) {
                console.log(error);
                status = 500;
@@ -143,10 +139,8 @@ class RecipeController {
         let status = 200;
         let body = [];
         try {
-            let recipeToUpdate = {};
 
-            if (validation.isSuccessfull()) {
-                let recipe = await db.recipe.update(recipeToUpdate,
+                let recipe = await db.recipe.update(request.body,
                     {
                         where: {
                             id: request.params.id
@@ -154,12 +148,6 @@ class RecipeController {
                     }
                 );
                 body = {'recipe': recipe, 'message': 'updated_recipe'};
-            } else {
-                body = {
-                    'recipe': GlobalConstants.FAILED_UPDATE,
-                    "errors_recipes": validation.getValidationsErrorsRecipes()
-                };
-            }
         } catch (error) {
             status = 500;
             body = {'recipe': error.recipe};

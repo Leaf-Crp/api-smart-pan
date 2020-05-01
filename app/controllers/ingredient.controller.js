@@ -18,8 +18,12 @@ class IngredientController {
     static async create(request, response) {
         let status = 200;
         let body = [];
-        try {
-            let step = await db.step.create(request.body);
+        try { let topicToCreate ={
+            label : request.body.label,
+            image: request.body.image
+        }
+        console.log(topicToCreate)
+            let step = await db.ingredient.create(topicToCreate);
             body = {'stepCreated': step, 'step': 'created'};
 
         } catch (error) {

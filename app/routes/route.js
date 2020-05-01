@@ -1,6 +1,5 @@
 import {Router} from 'express';
 import PostController from "../controllers/post.controller";
-import db from "../../models";
 import UserController from "../controllers/user.controller";
 import TopicController from "../controllers/topic.controller";
 import MessageController from "../controllers/message.controller";
@@ -11,7 +10,22 @@ import PrerequisiteTypeController from "../controllers/prerequisite_type.control
 import HistoricController from "../controllers/user_cooked_recipe";
 import PrerequisiteTypeStepController from "../controllers/prerequisite_type_step.controller";
 import RecipeTypeController from "../controllers/recipe_type.controller";
+const multer = require('multer');
+const crypto = require('crypto');
+const path = require('path');
 
+var storage = multer.diskStorage(
+    {
+        destination: './public/uploads/',
+        filename: function ( req, file, cb ) {
+            crypto.pseudoRandomBytes(16, function (err, raw) {
+                if (err) return cb(err);
+                cb(null, raw.toString('hex') + path.extname(file.originalname))
+            })
+        }
+    }
+);
+const upload = multer({storage: storage}).single("file");
 const router = Router();
 
 router.get('/posts', PostController.list);
@@ -47,7 +61,8 @@ router.get('/steps/:id', StepController.details);
 
 router.get('/recipes', RecipeController.list);
 router.get('/recipes/users', RecipeController.own_recipes);
-router.post('/recipes', RecipeController.create);
+router.post('/recipes', upload, RecipeController.create);
+router.put('/recipes', RecipeController.update);
 router.get('/recipes/:id', RecipeController.details);
 router.delete('/recipes/:id', RecipeController.delete);
 
