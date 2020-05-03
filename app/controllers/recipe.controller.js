@@ -1,10 +1,12 @@
 import db from "../../models";
 import GlobalConstants from "../constants/global.constants";
 import RecipeAssociations from "../constants/recipe.constants";
+
 const multer = require('multer');
-const upload = multer({dest:'public/uploads/recipes'}).single("file");
+const upload = multer({dest: 'public/uploads/recipes'}).single("file");
 const fs = require('fs');
 import FileService from "../services/file.service";
+import {json} from "sequelize";
 
 
 class RecipeController {
@@ -58,45 +60,47 @@ class RecipeController {
     }
 
     static async create(request, response) {
+        let jsonRecipe = (JSON.parse(request.body.recipe));
+        console.log(jsonRecipe);
         let status = 200;
         let body = [];
         try {
             let recipeToCreate = {
-                label: request.body.label,
-                image: request.body.image,
-                is_private: request.body.is_private,
-                id_recipe_type: request.body.id_recipe_type,
-                id_user: request.body.id_user
+                label: jsonRecipe.label,
+                image: '',
+                is_private: jsonRecipe.is_private,
+                id_recipe_type: jsonRecipe.id_recipe_type,
+                id_user: jsonRecipe.id_user
             };
             request.file && (recipeToCreate.image = RecipeAssociations.RECIPE_IMAGE_PATH + request.file.filename);
 
-               let recipe = await db.recipe.create(recipeToCreate);
-               request.body.steps.map(async step => {
-                   step.id_recipe = recipe.id;
-                   let stepCreated = await db.step.create(step);
-                   step.ingredients.map(async ingredient => {
-                       let step_ingredient = {
-                           id_step: stepCreated.id,
-                           id_ingredient: ingredient.id,
-                           quantity: ingredient.quantity
-                       };
-                       await db.step_ingredient.create(step_ingredient);
-                   });
-                   step.prerequisiteTypes.map(async prerequisite => {
-                       let prerequisite_type_step = {
-                           id_step: stepCreated.id,
-                           id_prerequisite_type: prerequisite.id,
-                           detail: prerequisite.detail
-                       };
-                       await db.prerequisite_type_step.create(prerequisite_type_step);
-                   })
-               });
-               body = {'recipeCreated': recipe, 'recipe': 'created'};
-           } catch (error) {
-               console.log(error);
-               status = 500;
-               body = {'recipe': error.recipe};
-           }
+            let recipe = await db.recipe.create(recipeToCreate);
+            jsonRecipe.steps.map(async step => {
+                step.id_recipe = recipe.id;
+                let stepCreated = await db.step.create(step);
+                step.ingredients.map(async ingredient => {
+                    let step_ingredient = {
+                        id_step: stepCreated.id,
+                        id_ingredient: ingredient.id,
+                        quantity: ingredient.quantity
+                    };
+                    await db.step_ingredient.create(step_ingredient);
+                });
+                step.prerequisiteTypes.map(async prerequisite => {
+                    let prerequisite_type_step = {
+                        id_step: stepCreated.id,
+                        id_prerequisite_type: prerequisite.id,
+                        detail: prerequisite.detail
+                    };
+                    await db.prerequisite_type_step.create(prerequisite_type_step);
+                })
+            });
+            body = {'recipeCreated': recipe, 'recipe': 'created'};
+        } catch (error) {
+            console.log(error);
+            status = 500;
+            body = {'recipe': error.recipe};
+        }
         return response.status(status).json(body);
     }
 
@@ -139,15 +143,14 @@ class RecipeController {
         let status = 200;
         let body = [];
         try {
-
-                let recipe = await db.recipe.update(request.body,
-                    {
-                        where: {
-                            id: request.params.id
-                        }
+            let recipe = await db.recipe.update(request.body,
+                {
+                    where: {
+                        id: request.params.id
                     }
-                );
-                body = {'recipe': recipe, 'message': 'updated_recipe'};
+                }
+            );
+            body = {'recipe': recipe, 'message': 'updated_recipe'};
         } catch (error) {
             status = 500;
             body = {'recipe': error.recipe};
