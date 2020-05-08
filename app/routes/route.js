@@ -25,7 +25,11 @@ var storage = multer.diskStorage(
         }
     }
 );
+
 const upload = multer({storage: storage}).single("file");
+const uploadSingle = multer({storage: storage}).fields([{ name: 'alarm_ended_recipe', maxCount: 1 },
+    { name: 'alarm_ended_step', maxCount: 1 }]);
+
 const router = Router();
 
 router.get('/posts', PostController.list);
@@ -38,7 +42,7 @@ router.get('/users', UserController.list);
 router.post('/users', UserController.create);
 router.post('/check_login', UserController.checkLogin);
 router.delete('/users/:id', UserController.delete);
-router.put('/users/:id', UserController.update);
+router.put('/users/:id', uploadSingle, UserController.update);
 router.get('/users/:id', UserController.details);
 
 router.post('/historic', HistoricController.makeHistoric);

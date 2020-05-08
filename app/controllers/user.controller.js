@@ -3,6 +3,7 @@ import UserValidator from "../validators/user.validator";
 import Utils from "../utils";
 import GlobalConstants from "../constants/global.constants";
 import UserConstants from "../constants/user.constants";
+import RecipeAssociations from "../constants/recipe.constants";
 
 var bcrypt = require('bcrypt');
 
@@ -60,8 +61,8 @@ class UserController {
                 lastname: request.body.lastname,
                 firstname: request.body.firstname,
                 is_connected_pan: request.body.is_connected_pan,
-                alarm_ended_recipe: request.body.alarm_ended_recipe,
-                alarm_ended_step: request.body.alarm_ended_step
+                alarm_ended_recipe: "",
+                alarm_ended_step: ""
             };
             let validation = await UserValidator.validateUserCreation(userToCreate, true);
             if (validation.isSuccessfull()) {
@@ -136,6 +137,9 @@ class UserController {
                 alarm_ended_recipe: request.body.alarm_ended_recipe,
                 alarm_ended_step: request.body.alarm_ended_step
             };
+
+             request.files['alarm_ended_recipe'] && (userToUpdate.alarm_ended_recipe = RecipeAssociations.RECIPE_IMAGE_PATH + request.files['alarm_ended_recipe'][0].filename);
+             request.files['alarm_ended_step'] && (userToUpdate.alarm_ended_step = RecipeAssociations.RECIPE_IMAGE_PATH + request.files['alarm_ended_step'][0].filename);
 
             let validation = await UserValidator.validateUserCreation(userToUpdate, false);
             if (validation.isSuccessfull()) {

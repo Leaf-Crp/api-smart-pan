@@ -61,7 +61,6 @@ class RecipeController {
 
     static async create(request, response) {
         let jsonRecipe = (JSON.parse(request.body.recipe));
-        console.log(jsonRecipe);
         let status = 200;
         let body = [];
         try {
