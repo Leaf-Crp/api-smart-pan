@@ -72,10 +72,11 @@ CREATE TABLE topic(
         id      Int  Auto_increment  NOT NULL ,
         title   Varchar (255) NOT NULL ,
         content Text NOT NULL ,
-        id_user Int NOT NULL
+        id_user Int NOT NULL,
+        id_recipe Int NOT NULL,
 	,CONSTRAINT topic_PK PRIMARY KEY (id)
-
-	,CONSTRAINT topic_user_FK FOREIGN KEY (id_user) REFERENCES user(id)
+	,CONSTRAINT topic_user_FK FOREIGN KEY (id_user) REFERENCES user(id),
+	,CONSTRAINT topic_recipe_FK FOREIGN KEY (id_recipe) REFERENCES recipe(id)
 )ENGINE=InnoDB;
 
 
@@ -88,7 +89,6 @@ CREATE TABLE message(
         content  Text NOT NULL ,
         id_topic Int NOT NULL
 	,CONSTRAINT message_PK PRIMARY KEY (id)
-
 	,CONSTRAINT message_topic_FK FOREIGN KEY (id_topic) REFERENCES topic(id)
 )ENGINE=InnoDB;
 
