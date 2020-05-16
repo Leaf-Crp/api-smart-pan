@@ -6,8 +6,7 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
                 autoIncrement: true
             },
-            content: DataTypes.TEXT,
-            id_topic: DataTypes.INTEGER
+            content: DataTypes.TEXT
         },
         {
             freezeTableName: true,
@@ -16,7 +15,8 @@ module.exports = (sequelize, DataTypes) => {
     );
 
     Message.associate = (models) => {
-        Message.belongsTo(models.topic, {foreignKey: 'id_topic'});
+        Message.belongsTo(models.user, {foreignKey: 'id_user'});
+        Message.belongsTo(models.recipe, {foreignKey: 'id_recipe'});
     };
     return Message;
 };

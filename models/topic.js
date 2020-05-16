@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
     );
 
     Topic.associate = (models) => {
-        Topic.hasMany(models.message, {foreignKey: 'id_topic' });
+        //Topic.hasMany(models.message, {foreignKey: 'id_topic' });
         Topic.belongsTo(models.user, {foreignKey: 'id_user'});
         Topic.belongsTo(models.recipe, {foreignKey: 'id_recipe'});
     };
