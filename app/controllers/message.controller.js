@@ -23,8 +23,10 @@ class MessageController {
         try {
             let messageToCreate = {
                 content: request.body.content,
-                id_topic: request.body.id_topic
+                id_recipe: request.body.id_recipe,
+                id_user: request.body.id_user
             };
+
             let message = await db.message.create(messageToCreate);
             body = {'messageCreated': message, 'message': 'created'};
 

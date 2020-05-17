@@ -6,7 +6,15 @@ module.exports = (sequelize, DataTypes) => {
                 primaryKey: true,
                 autoIncrement: true
             },
-            content: DataTypes.TEXT
+            content: DataTypes.TEXT,
+            id_recipe: DataTypes.INTEGER,
+            id_user: DataTypes.INTEGER,
+            date: {
+                type: 'TIMESTAMP',
+                defaultValue: sequelize.literal('CURRENT_TIMESTAMP'),
+                allowNull: false
+            }
+
         },
         {
             freezeTableName: true,

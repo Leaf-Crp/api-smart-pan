@@ -1,7 +1,7 @@
 import db from "../../models";
 
 let constants = {
-    RECIPE_ASSOCIATIONS:      {
+    RECIPE_ASSOCIATIONS: {
         attributes: {exclude: ['id_recipe_type', 'id_user']},
         include: [{
             model: db.recipe_type,
@@ -28,9 +28,15 @@ let constants = {
                         },
                     }
                 ]
-            }]
+            },
+            {
+                model: db.message, required: false, include: [{
+                    model: db.user
+                }]
+            }
+        ]
     },
-    OWN_RECIPE_ASSOCIATIONS:      {
+    OWN_RECIPE_ASSOCIATIONS: {
         attributes: {exclude: ['id_recipe_type', 'id_user']},
         where: {
             id_user: 1,
@@ -60,6 +66,13 @@ let constants = {
                         },
                     }
                 ]
+            }, {
+                model: db.message,
+                required: true
+            }, {
+                model: db.message, required: false, include: [{
+                    model: db.user
+                }]
             }]
     }, RECIPE_IMAGE_PATH: 'public/uploads/'
 };
