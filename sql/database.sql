@@ -73,9 +73,9 @@ CREATE TABLE topic(
         title   Varchar (255) NOT NULL ,
         content Text NOT NULL ,
         id_user Int NOT NULL,
-        id_recipe Int NOT NULL,
+        id_recipe Int NOT NULL
 	,CONSTRAINT topic_PK PRIMARY KEY (id)
-	,CONSTRAINT topic_user_FK FOREIGN KEY (id_user) REFERENCES user(id),
+	,CONSTRAINT topic_user_FK FOREIGN KEY (id_user) REFERENCES user(id)
 	,CONSTRAINT topic_recipe_FK FOREIGN KEY (id_recipe) REFERENCES recipe(id)
 )ENGINE=InnoDB;
 
@@ -112,8 +112,8 @@ CREATE TABLE ingredient(
 CREATE TABLE prerequisite_type(
         id    Int  Auto_increment  NOT NULL ,
         label Varchar (255) NOT NULL,
-                code Varchar (255) NOT NULL
-	,CONSTRAINT prerequisite_type_PK PRIMARY KEY (id)
+        code Varchar (255) NOT NULL
+    ,CONSTRAINT prerequisite_type_PK PRIMARY KEY (id)
 )ENGINE=InnoDB;
 
 
