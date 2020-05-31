@@ -4,6 +4,7 @@ import Utils from "../utils";
 import GlobalConstants from "../constants/global.constants";
 import UserConstants from "../constants/user.constants";
 import RecipeAssociations from "../constants/recipe.constants";
+import {where} from "sequelize";
 
 var bcrypt = require('bcrypt');
 
@@ -86,7 +87,11 @@ class UserController {
         let body = [];
         try {
             let id = request.params.id;
-            let user = await db.user.findByPk(id, {
+            let user = await db.user.findOne( {
+                where: {
+                    email: request.params.email.trim()
+                }
+            }, {
                 include: [{
                     association: 'historics',
                     attributes: {exclude: ['id_recipe_type', 'id_user']}

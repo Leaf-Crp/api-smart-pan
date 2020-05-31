@@ -43,7 +43,7 @@ router.post('/users', UserController.create);
 router.post('/check_login', UserController.checkLogin);
 router.delete('/users/:id', UserController.delete);
 router.put('/users/:id', uploadAlarms, UserController.update);
-router.get('/users/:id', UserController.details);
+router.get('/users/:email', UserController.details);
 
 router.post('/historic', HistoricController.makeHistoric);
 router.delete('/historic/:iduser/:idrecipe', HistoricController.delete);
