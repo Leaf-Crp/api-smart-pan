@@ -125,22 +125,28 @@ class UserController {
         return response.status(status).json(body);
     }
 
-
+    /**
+     * Voir processus creation recettes pour envoyer fichier depuis retrofit
+     *  Depuis Android Srudio ,  params =>   saveUser(@Part MultipartBody.Part requestBodyFile, @Part("user") RequestBody user)
+     * @param request
+     * @param response
+     * @returns {Promise<*>}
+     */
     static async update(request, response) {
         let status = 200;
         let body = [];
+        //parse l'objet user de retrofit (@Part("user") RequestBody user) en JSON
+        let jsonUser = (JSON.parse(request.body.user));
         try {
-            const salt = await bcrypt.genSalt(10);
-            let hashedPassword = await bcrypt.hash(request.body.password, salt);
 
             let userToUpdate = {
-                email: request.body.email,
-                password: hashedPassword,
-                lastname: request.body.lastname,
-                firstname: request.body.firstname,
-                is_connected_pan: request.body.is_connected_pan,
-                alarm_ended_recipe: request.body.alarm_ended_recipe,
-                alarm_ended_step: request.body.alarm_ended_step
+                email: jsonUser.email,
+                password: jsonUser.password,
+                lastname: jsonUser.lastname,
+                firstname: jsonUser.firstname,
+                is_connected_pan: jsonUser.is_connected_pan,
+                alarm_ended_recipe: '',
+                alarm_ended_step: ''
             };
 
              request.files['alarm_ended_recipe'] && (userToUpdate.alarm_ended_recipe = RecipeAssociations.RECIPE_IMAGE_PATH + request.files['alarm_ended_recipe'][0].filename);
