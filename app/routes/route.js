@@ -64,7 +64,7 @@ router.post('/steps', StepController.create);
 router.get('/steps/:id', StepController.details);
 
 router.get('/recipes', RecipeController.list);
-router.get('/recipes/users', RecipeController.own_recipes);
+router.get('/recipes/users/:id', RecipeController.own_recipes);
 router.post('/recipes', upload, RecipeController.create);
 router.put('/recipes', RecipeController.update);
 router.get('/recipes/:id', RecipeController.details);

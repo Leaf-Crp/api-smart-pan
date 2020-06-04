@@ -37,8 +37,47 @@ class RecipeController {
     static async own_recipes(request, response) {
         let status = 200;
         let body = {};
+        let id = request.params.id;
         try {
-            let recipes = await db.recipe.findAll(RecipeAssociations.OWN_RECIPE_ASSOCIATIONS);
+            let recipes = await db.recipe.findAll({
+                attributes: {exclude: ['id_recipe_type', 'id_user']},
+                where: {
+                    id_user: id,
+                },
+                include: [{
+                    model: db.recipe_type,
+                    required: true
+                }, {
+                    model: db.user,
+                    required: true
+                },
+                    {
+                        model: db.step,
+                        required: true,
+                        include: [{
+                            model: db.prerequisite_type,
+                            as: 'prerequisite_type',
+                            through: {
+                                attributes: ['detail']
+                            },
+                        },
+                            {
+                                model: db.ingredient,
+                                as: 'ingredients',
+                                through: {
+                                    attributes: ['quantity']
+                                },
+                            }
+                        ]
+                    }, {
+                        model: db.message,
+                        required: true
+                    }, {
+                        model: db.message, required: false, include: [{
+                            model: db.user
+                        }]
+                    }]
+            });
             //on accède aux propriétés mtm directement dans l'objet
             recipes.map(r => {
                 r.steps.map(s => {
