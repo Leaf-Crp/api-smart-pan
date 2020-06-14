@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: user.controller.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: user.controller.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import db from "../../models";
+import UserValidator from "../validators/user.validator";
+import Utils from "../utils";
+import GlobalConstants from "../constants/global.constants";
+import UserConstants from "../constants/user.constants";
+import RecipeAssociations from "../constants/recipe.constants";
+import {where} from "sequelize";
+
+var bcrypt = require('bcrypt');
+
+class UserController {
+
+    /**
+     * Repeat &lt;tt>str&lt;/tt> several times.
+     * @param {string} str The string to repeat.
+     * @param {number} [times=1] How many times to repeat the string.
+     * @returns {string}
+     */
+    static async list(request, response) {
+        let status = 200;
+        let body = {};
+        try {
+            let users = await db.user.findAll();
+            body = {'users': users, 'message': 'List users'};
+        } catch (error) {
+            status = 500;
+            body = {'message': error.message};
+        }
+        return response.status(status).json(body);
+    }
+
+    /**
+     *Vérifie si l'utilisateur existe et que le password match
+     * @param request
+     * @param response
+     * @returns {Promise&lt;*|Json>}
+     */
+    static async checkLogin(request, response) {
+        let status = 200;
+        let body = [];
+        try {
+            try {
+                let user = await db.user.findOne({where: {email: request.body.email}});
+                let matchPassword = (await bcrypt.compare(request.body.password, user.password));
+                if (matchPassword) {
+                    body = {'user': user, 'message': UserConstants.LOGIN_SUCCESSFULL};
+                }
+            } catch (error) {
+                body = {'message': UserConstants.FAILED_CONNECTION};
+            }
+
+        } catch (error) {
+            status = 500;
+            body = {'message': error.message};
+        }
+        return response.status(status).json(body);
+    }
+
+    static async create(request, response) {
+        let status = 200;
+        let body = [];
+        try {
+            //Crypte le mdp avec bcrypt
+            const salt = await bcrypt.genSalt(10);
+            let hashedPassword = await bcrypt.hash(request.body.password, salt);
+            let userToCreate = {
+                email: request.body.email,
+                password: hashedPassword,
+                lastname: request.body.lastname,
+                firstname: request.body.firstname,
+                is_connected_pan: request.body.is_connected_pan,
+                alarm_ended_recipe: "",
+                alarm_ended_step: ""
+            };
+            let validation = await UserValidator.validateUserCreation(userToCreate, true);
+            if (validation.isSuccessfull()) {
+                let user = await db.user.create(userToCreate);
+                body = {'user': user, 'message': 'created'};
+            } else {
+                body = {
+                    'user': GlobalConstants.FAILED_CREATION,
+                    "errors_messages": validation.getValidationsErrorsMessages()
+                };
+            }
+        } catch (error) {
+            status = 500;
+            body = {'message': error.message};
+        }
+        return response.status(status).json(body);
+    }
+
+    static async details(request, response) {
+        let status = 200;
+        let body = [];
+        try {
+            let id = request.params.id;
+            let user = await db.user.findOne( {
+                where: {
+                    email: request.params.email.trim()
+                }
+            }, {
+                include: [{
+                    association: 'historics',
+                    attributes: {exclude: ['id_recipe_type', 'id_user']}
+                }],
+            });
+            body = {'user': user, 'message': 'Details'};
+        } catch (error) {
+            status = 500;
+            body = {'message': error.message};
+        }
+        return response.status(status).json(body);
+    }
+
+
+    static async delete(request, response) {
+        let status = 200;
+        let body = [];
+        try {
+            await db.user.destroy(
+                {
+                    where: {
+                        id: request.params.id
+                    }
+                }
+            );
+            body = {'message': 'user_deleted'};
+        } catch (error) {
+            status = 500;
+            body = {'message': error.message};
+        }
+        return response.status(status).json(body);
+    }
+
+    /**
+     * Voir processus creation recettes pour envoyer fichier depuis retrofit
+     *  Depuis Android Srudio ,  params =>   saveUser(@Part MultipartBody.Part requestBodyFile, @Part("user") RequestBody user)
+     * @param request
+     * @param response
+     * @returns {Promise&lt;*>}
+     */
+    static async update(request, response) {
+        let status = 200;
+        let body = [];
+        //parse l'objet user de retrofit (@Part("user") RequestBody user) en JSON
+        let jsonUser = (JSON.parse(request.body.user));
+        try {
+
+            let userToUpdate = {
+                email: jsonUser.email,
+                password: jsonUser.password,
+                lastname: jsonUser.lastname,
+                firstname: jsonUser.firstname,
+                is_connected_pan: jsonUser.is_connected_pan,
+                alarm_ended_recipe: '',
+                alarm_ended_step: ''
+            };
+
+             request.files['alarm_ended_recipe'] &amp;&amp; (userToUpdate.alarm_ended_recipe = RecipeAssociations.RECIPE_IMAGE_PATH + request.files['alarm_ended_recipe'][0].filename);
+             request.files['alarm_ended_step'] &amp;&amp; (userToUpdate.alarm_ended_step = RecipeAssociations.RECIPE_IMAGE_PATH + request.files['alarm_ended_step'][0].filename);
+
+            let validation = await UserValidator.validateUserCreation(userToUpdate, false);
+            if (validation.isSuccessfull()) {
+                let user = await db.user.update(userToUpdate,
+                    {
+                        where: {
+                            id: request.params.id
+                        }
+                    }
+                );
+                body = {'user': user, 'message': 'updated_user'};
+            } else {
+                body = {
+                    'user': GlobalConstants.FAILED_UPDATE,
+                    "errors_messages": validation.getValidationsErrorsMessages()
+                };
+            }
+        } catch (error) {
+            status = 500;
+            body = {'message': error.message};
+        }
+        return response.status(status).json(body);
+    }
+}
+
+export default UserController;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.4</a> on Sat Jun 13 2020 17:27:18 GMT+0200 (GMT+02:00)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

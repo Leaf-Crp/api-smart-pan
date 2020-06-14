@@ -3,6 +3,9 @@ import db from "../../models";
 let constants = {
     RECIPE_ASSOCIATIONS: {
         attributes: {exclude: ['id_recipe_type', 'id_user']},
+        where: {
+            is_private: 0,
+        },
         include: [{
             model: db.recipe_type,
             required: true
